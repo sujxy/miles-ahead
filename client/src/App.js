@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Footer from './components/Footer';
 import Home from './pages/Home' ;
 import { Toaster } from 'react-hot-toast';
+import AnalysisPage from './pages/AnalysisPage';
 function App() {
   return (
    
@@ -18,6 +19,7 @@ function App() {
           <Route path="/signup" element={<Signup />}></Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/chatpage" element={<Chatpage />}></Route>
+          <Route path="/analysispage" element={<AnalysisPage />}></Route>
         </Routes>
         <Footer/>
       </div>
