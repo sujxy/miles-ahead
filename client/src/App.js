@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home' ;
 import { Toaster } from 'react-hot-toast';
 import AnalysisPage from './pages/AnalysisPage';
+import ReviewPage from './pages/ReviewPage';
 function App() {
   return (
    
@@ -20,6 +21,7 @@ function App() {
           <Route path="/login" element={<Login />}></Route>
           <Route path="/chatpage" element={<Chatpage />}></Route>
           <Route path="/analysispage" element={<AnalysisPage />}></Route>
+          {/* <Route path="/reviewpage" element={<ReviewPage/>}></Route> */}
         </Routes>
         <Footer/>
       </div>
