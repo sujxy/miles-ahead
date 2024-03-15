@@ -9,20 +9,18 @@ import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import ChatPage from "./pages/ChatPage";
 import Home from "./pages/Home";
+import ReviewPage from "./pages/ReviewPage";
 
 export const App = () => {
   return (
     <BrowserRouter>
-      <div>
-        <Header />
-        <Routes>
-          <Route path="/" element={<Home />}></Route>
-          <Route path="/signup" element={<Signup />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/chatpage" element={<ChatPage />}></Route>
-        </Routes>
-        <Footer />
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/chatpage" element={<ChatPage />} />
+        <Route path="/preview" element={<ReviewPage />} />
+      </Routes>
     </BrowserRouter>
   );
 };
