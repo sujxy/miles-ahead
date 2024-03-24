@@ -86,6 +86,48 @@ const AddReport3 = async (req, res) => {
 };
 
 
+const GetReport1 = async (req, res) => {
+    try {
+
+      const { email } = req.body; 
+      const response = await userModel.findOne({ email: email }); // Find user by email
+      if (!response) {
+        return res.status(404).json({ status: "fail", message: "User not found" });
+      }
+  
+      const report = response.report1_desc;
+      if (!report) {
+        return res.status(200).json({ status: "success", message: "Report 1 not found" });
+      } else {
+        return res.status(200).json({ status: "success", message: "Report 1 found", report });
+      }
+    } catch (error) {
+      console.error(error); 
+      return res.status(500).json({ status: "fail", message: "Error from backend" });
+    }
+  };
+  
+
+  const GetReport2 = async (req, res) => {
+    try {
+
+      const { email } = req.body; 
+      const response = await userModel.findOne({ email: email }); // Find user by email
+      if (!response) {
+        return res.status(404).json({ status: "fail", message: "User not found" });
+      }
+  
+      const report = response.report2_desc;
+      if (!report) {
+        return res.status(200).json({ status: "success", message: "Report 2 not found" });
+      } else {
+        return res.status(200).json({ status: "success", message: "Report 2 found", report });
+      }
+    } catch (error) {
+      console.error(error); 
+      return res.status(500).json({ status: "fail", message: "Error from backend" });
+    }
+  };
 
 
-export {AddReport1,AddReport2,AddReport3};
+export { AddReport1, AddReport2, AddReport3, GetReport1, GetReport2 };
