@@ -1,40 +1,14 @@
 import { ChevronDown, MoveRight } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
+import { Navbar } from "../components/navbar";
 
 const Home = () => {
   return (
     <div className="relative min-h-screen w-screen">
       {/* navbar */}
-      <div className="sticky top-0 flex w-full items-center justify-between bg-transparent px-24 py-6">
-        <div className="center-div w-auto">
-          <img src={"./logo.png"} className="h-8 w-12" />
-          <h1 className="font-yeseva text-3xl italic text-gray-700">
-            milesahead
-          </h1>
-        </div>
-        <div className="flex items-center justify-between gap-5 text-lg font-light text-gray-600">
-          <Link>
-            <span>
-              <ChevronDown className="inline" />
-            </span>
-            About
-          </Link>
-          <Link>
-            <span>
-              <ChevronDown className="inline" />
-            </span>
-            Services
-          </Link>
-          <Link className="center-div border-primary rounded-lg border bg-transparent px-2 py-1">
-            Sign In
-          </Link>
-          <Link className="center-div  bg-primary rounded-lg  px-2 py-1 font-normal text-white">
-            Sign Up
-          </Link>
-        </div>
-      </div>
-      <div className=" absolute z-10 mx-auto flex min-h-[720px] w-full flex-col items-center justify-normal overflow-y-hidden  bg-transparent">
+      <Navbar type={"home"} />
+      <div className=" absolute z-10 mx-auto flex min-h-[97vh] w-full flex-col items-center justify-normal bg-transparent   pt-12">
         <div className="mt-16 flex  flex-col items-center justify-normal  gap-2 overflow-hidden">
           <h1 className="text-5xl font-bold">
             Unlock Your <span className="gradient-text">Potential</span>
@@ -44,14 +18,17 @@ const Home = () => {
             unleash your potential and steer your career journey with
             confidence.
           </p>
-          <Link className="center-div bg-primary mt-3 rounded-xl px-3 py-2 text-xl font-normal text-white">
+          <Link
+            to="/chat/a1"
+            className="center-div mt-3 rounded-xl bg-primary px-3 py-2 text-xl font-normal text-white "
+          >
             Get Started <MoveRight className="inline" />
           </Link>
         </div>
         <img src={"./phone_mockup.png"} />
       </div>
 
-      <div className="bg-primary absolute bottom-2 z-0 h-[400px] w-4/5 translate-x-[18%] rounded-full blur-[250px]"></div>
+      <div className="absolute bottom-2 z-0 h-[400px] w-4/5 translate-x-[18%] rounded-full bg-primary blur-[250px]"></div>
     </div>
   );
 };

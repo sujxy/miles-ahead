@@ -18,7 +18,7 @@ export const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/chatpage" element={<ChatPage />} />
+        <Route path="/chat/:assessmentType" element={<ChatPage />} />
         <Route path="/preview" element={<ReviewPage />} />
       </Routes>
     </BrowserRouter>
