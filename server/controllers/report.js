@@ -1,44 +1,35 @@
-import userModel from "../models/User.js";
+import UserModel from "../models/userModel.js";
+import ChatModel from "../models/chatModel.js";
+import { Report1Model, Report2Model } from "../models/reportModel.js";
 
-// const AddReport1 = async (req, res) => {
-//     try {
-//         const report1_desc = req.body.report1_desc;
-//         const userEmail = req.body.email;
-//         const scores=({
-//             E:req.body.scores.E,
-//             A:req.body.scores.A,
-//             I:req.body.scores.I,
-//             R:req.body.scores.R,
-//             C:req.body.scores.C,
-//             S:req.body.scores.S,
-//         })
-//         await userModel.findOneAndUpdate(
-//             { email: userEmail },
-//             { $set: { report1_desc: report1_desc,scores:scores} },
-//             { new: true }
-//         )
-//         res.staus(200).json({ staus: "success", message: "Report 1 analysis added " })
-//     } catch (error) {
-//         res.status(500).json({ status: "fail", message: "error from backend" });
-//         console.log(error)
-//     }
-// }
-
+//add report1 analysis to mongodb
 const AddReport1 = async (req, res) => {
   try {
-    const { report1_desc, email, scores } = req.body;
-    const updatedUser = await userModel.findOneAndUpdate(
-      { email: email },
-      { $set: { report1_desc: report1_desc, scores: scores } },
-      { new: true },
-    );
+    const { user_id, chat_id, scores, content } = req.body;
+    const findUser = await UserModel.findOne({ _id: user_id });
 
-    if (!updatedUser) {
+    if (!findUser) {
       return res
         .status(404)
         .json({ status: "fail", message: "User not found" });
     }
 
+    const findChat = await ChatModel.findOne({ _id: chat_id });
+
+    if (!findChat) {
+      return res
+        .status(404)
+        .json({ status: "fail", message: "Chat not found" });
+    }
+
+    const newReport = new Report1Model({
+      user_id,
+      chat_id,
+      scores,
+      content,
+    });
+
+    await newReport.save();
     res
       .status(200)
       .json({ status: "success", message: "Report 1 analysis added" });
@@ -48,21 +39,35 @@ const AddReport1 = async (req, res) => {
   }
 };
 
+
+//add report2 analysis to mongodb
 const AddReport2 = async (req, res) => {
   try {
-    const { report2_desc, email } = req.body;
-    const updatedUser = await userModel.findOneAndUpdate(
-      { email: email },
-      { $set: { report2_desc: report2_desc } },
-      { new: true },
-    );
+    const { user_id, chat_id, content, userOptions } = req.body;
+    const findUser = await UserModel.findOne({ _id: user_id });
 
-    if (!updatedUser) {
+    if (!findUser) {
       return res
         .status(404)
         .json({ status: "fail", message: "User not found" });
     }
 
+    const findChat = await ChatModel.findOne({ _id: chat_id });
+
+    if (!findChat) {
+      return res
+        .status(404)
+        .json({ status: "fail", message: "Chat not found" });
+    }
+
+    const newReport = new Report2Model({
+      user_id,
+      chat_id,
+      content,
+      userOptions,
+    });
+
+    await newReport.save();
     res
       .status(200)
       .json({ status: "success", message: "Report 2 analysis added" });
@@ -72,50 +77,25 @@ const AddReport2 = async (req, res) => {
   }
 };
 
-const AddReport3 = async (req, res) => {
-  try {
-    const { report3_desc, email } = req.body;
-    const updatedUser = await userModel.findOneAndUpdate(
-      { email: email },
-      { $set: { report3_desc: report3_desc } },
-      { new: true },
-    );
 
-    if (!updatedUser) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "User not found" });
-    }
-
-    res
-      .status(200)
-      .json({ status: "success", message: "Report 3 analysis added" });
-  } catch (error) {
-    res.status(500).json({ status: "fail", message: "Error from backend" });
-    console.log(error);
-  }
-};
-
+//get report 1 data
 const GetReport1 = async (req, res) => {
   try {
-    const { email } = req.body;
-    const response = await userModel.findOne({ email: email }); // Find user by email
-    if (!response) {
+    const { user_id, chat_id } = req.body;
+    const report1 = await Report1Model.findOne({
+      user_id: user_id,
+      chat_id: chat_id,
+    });
+
+    if (!report1) {
       return res
         .status(404)
-        .json({ status: "fail", message: "User not found" });
+        .json({ status: "fail", message: "Report 1 not found" });
     }
 
-    const report = response.report1_desc;
-    if (!report) {
-      return res
-        .status(200)
-        .json({ status: "success", message: "Report 1 not found" });
-    } else {
-      return res
-        .status(200)
-        .json({ status: "success", message: "Report 1 found", report });
-    }
+    return res
+      .status(200)
+      .json({ status: "success", message: "Report 1 found", report1 });
   } catch (error) {
     console.error(error);
     return res
@@ -124,26 +104,25 @@ const GetReport1 = async (req, res) => {
   }
 };
 
+
+//get report 2 data
 const GetReport2 = async (req, res) => {
   try {
-    const { email } = req.body;
-    const response = await userModel.findOne({ email: email }); // Find user by email
-    if (!response) {
+    const { user_id, chat_id } = req.body;
+    const report2 = await Report2Model.findOne({
+      user_id: user_id,
+      chat_id: chat_id,
+    });
+
+    if (!report2) {
       return res
         .status(404)
-        .json({ status: "fail", message: "User not found" });
+        .json({ status: "fail", message: "Report 2 not found" });
     }
 
-    const report = response.report2_desc;
-    if (!report) {
-      return res
-        .status(200)
-        .json({ status: "success", message: "Report 2 not found" });
-    } else {
-      return res
-        .status(200)
-        .json({ status: "success", message: "Report 2 found", report });
-    }
+    return res
+      .status(200)
+      .json({ status: "success", message: "Report 2 found", report2 });
   } catch (error) {
     console.error(error);
     return res
@@ -152,4 +131,4 @@ const GetReport2 = async (req, res) => {
   }
 };
 
-export { AddReport1, AddReport2, AddReport3, GetReport1, GetReport2 };
+export { AddReport1, AddReport2, GetReport1, GetReport2 };

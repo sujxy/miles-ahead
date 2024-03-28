@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config()
+import ChatModel from "../models/chatModel.js";
+import UserModel from "../models/userModel.js";
 //llm
 import { ChatAnthropic } from "@langchain/anthropic";
 import { HumanMessage, AIMessage } from "@langchain/core/messages";
@@ -108,5 +112,29 @@ export const handleChat_2 = async (req, res) => {
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
+  }
+};
+
+//adding chat to mongodb
+export const AddChat= async (req, res) => {
+  try {
+      const { user_id, type} = req.body;
+      const findUser = await UserModel.findOne(
+          { _id: user_id },
+      );
+
+      if (!findUser) {
+          return res.status(404).json({ status: "fail", message: "User not found" });
+      }
+      
+      const Conversation=new ChatModel({
+          user_id,
+          type
+      })
+      await Conversation.save();
+      res.status(200).json({ status: "success", message: "Conversation added to MongoDB" });
+  } catch (error) {
+      res.status(500).json({ status: "fail", message: "Fail to add Conversation 1 to MongoDB" });
+      console.log(error);
   }
 };

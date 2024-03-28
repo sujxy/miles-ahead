@@ -33,39 +33,7 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-    },
-    report1_desc: {
-      type: String,
-      required: false,
-    },
-    report2_desc: {
-      type: String,
-      required: false,
-    },
-    report3_desc: {
-      type: String,
-      required: false,
-    },
-    scores: {
-      E: {
-        type: Number,
-      },
-      A: {
-        type: Number,
-      },
-      I: {
-        type: Number,
-      },
-      R: {
-        type: Number,
-      },
-      C: {
-        type: Number,
-      },
-      S: {
-        type: Number,
-      },
-    },
+    }
   },
   { timestamps: true },
 );
