@@ -17,6 +17,7 @@ import {
   skill_assessment_prompt,
 } from "../prompts/prompts.js";
 import codeCareerMap from "../prompts/rolemap.js";
+import { college_prompt } from "../prompts/prompts.js";
 
 const model = new ChatAnthropic({
   temperature: 0.9,
@@ -313,3 +314,98 @@ export const GetLatestChatId = async (req, res) => {
   }
 }
 
+
+
+
+
+
+//phase 3 jobs  
+import axios from 'axios';
+
+export const GetJobs = async (req, res) => {
+  const field=req.body;
+  const url = "https://api.scrapingdog.com/linkedinjobs/";
+  const params = {
+      api_key: "65f42b4be698b20a9dff912a",
+      field: field,
+      geoid: "100293800",
+      page: 1
+  };
+    
+  try {
+    // Send a GET request with the parameters
+    const response = await axios.get(url, { params });
+    
+    // Check if the request was successful (status code 200)
+    if (response.status === 200) {
+      // Extract the relevant data from the response
+      const data = response.data;
+      // console.log(data);
+
+      // Send the extracted data in the JSON response
+      res.status(200).json({ data });
+    } else {
+      console.log("Request failed with status code:", response.status);
+      res.status(response.status).json({ error: "Request failed" });
+    }
+  } catch (error) {
+    console.error("An error occurred:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
+// Phase 3 colleges
+
+export const GetColleges= async (req, res) => {
+  const { field, location, fees, age } = req.body;
+
+  const collegeTemplate = ChatPromptTemplate.fromMessages([
+    ["system", college_prompt],
+    ["user", `I am looking for ${field} colleges in ${location} with fees around ${fees} for someone aged ${age}`]
+  ]);
+
+  const chain = collegeTemplate.pipe(model);
+
+  try {
+    const response = await chain.invoke({ field, location, fees, age });
+
+    if (response) {
+      const responseString = response.lc_kwargs.content;
+
+      // Extract the response content
+      const responseContent = responseString.match(/<response>(.*)<\/response>/s)[1];
+
+      // Function to extract college details
+      const extractCollegeDetails = (collegeTag) => {
+        const collegeDetails = collegeTag.match(/<college_name>(.*?)<\/college_name>|<college_website_link>(.*?)<\/college_website_link>|<college_fees>(.*?)<\/college_fees>|<college_address>(.*?)<\/college_address>/g);
+        const [collegeName, collegeWebsiteLink, collegeFees, collegeAddress] = collegeDetails.map(detail => detail.replace(/<\/?college_name>|<\/?college_website_link>|<\/?college_fees>|<\/?college_address>/g, ''));
+
+        return {
+          collegeName,
+          collegeWebsiteLink,
+          collegeFees,
+          collegeAddress,
+        };
+      };
+
+      // Extract details for each college
+      const collegeDetails = [
+        extractCollegeDetails(responseContent.match(/<college1>(.*?)<\/college1>/s)[0]),
+        extractCollegeDetails(responseContent.match(/<college2>(.*?)<\/college2>/s)[0]),
+        extractCollegeDetails(responseContent.match(/<college3>(.*?)<\/college3>/s)[0]),
+        extractCollegeDetails(responseContent.match(/<college4>(.*?)<\/college4>/s)[0]),
+        extractCollegeDetails(responseContent.match(/<college5>(.*?)<\/college5>/s)[0]),
+      ];
+
+      res.status(200).json({ collegeDetails });
+    } else {
+      console.log("Request failed with status code:", response.status);
+      res.status(response.status).json({ error: "Request failed" });
+    }
+  } catch (error) {
+    console.error("An error occurred:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
