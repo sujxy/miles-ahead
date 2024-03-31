@@ -1,68 +1,33 @@
-import React from "react";
 import { useParams } from "react-router-dom";
-import { Navbar } from "../components/navbar";
 import Message from "../components/message";
-
-const messages = [
-  {
-    type: "AI",
-    content:
-      "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search fo",
-  },
-  {
-    type: "Human",
-    content:
-      "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search fo",
-  },
-  {
-    type: "AI",
-    content:
-      "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search fo",
-  },
-  {
-    type: "Human",
-    content:
-      "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search fo",
-  },
-  {
-    type: "AI",
-    content:
-      "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search fo",
-  },
-  {
-    type: "Human",
-    content:
-      "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search fo",
-  },
-];
+import { useRecoilState, useRecoilValue } from "recoil";
+import { currentLevel, progressAtom } from "../store/atoms";
+import ChatInputBox from "../components/ChatInputBox";
+import UserProgress from "../components/userProgress";
+import MessageBox from "../components/messageBox";
+import ResultPage from "./resultpage";
 
 const ChatPage = () => {
-  const { assessmentType } = useParams();
+  const current = useRecoilValue(currentLevel);
+
   return (
     <div>
-      <Navbar type={"chat"} />
-      <div className="grid max-h-[100vh] w-screen grid-cols-12 border px-24 pt-16">
-        <div className=" col-span-3    py-8 ">
-          <div className="  flex h-1/3 items-start justify-start gap-2   ">
-            <div className=" h-full w-[8px]  rounded-full border ">
-              <div className={`h-[35%] w-full rounded-full bg-primary`}></div>
-            </div>
-            <div className="flex h-full flex-col items-start justify-between gap-8 text-lg font-medium text-gray-500">
-              <h3 className="font-semibold text-primary">About you</h3>
-              <h3 className="font-semibold text-primary">Assessment</h3>
-              <h3>Career Path</h3>
-              <h3>Your Results</h3>
-            </div>
+      <div className="grid max-h-[100vh] w-screen grid-cols-12  px-24 ">
+        <div className=" col-span-3  flex flex-col items-center justify-start gap-6 pt-6 ">
+          <div className="center-div w-auto">
+            <img src={"/logo.png"} className="h-8 w-12" />
+            <h1 className="font-yeseva text-3xl italic text-gray-700">
+              milesahead
+            </h1>
           </div>
+          <UserProgress />
         </div>
-        <div className="col-span-9 h-[92vh] overflow-y-scroll   pt-8">
-          <div className="px-2 py-8">
-            {" "}
-            {messages.map((m, i) => (
-              <Message key={i} type={m.type} message={m.content} />
-            ))}
+
+        <div className="col-span-9 flex h-[100vh] grid-rows-12  flex-col justify-normal  ">
+          <div className="    center-div  h-16 rounded-b-lg text-lg font-semibold text-primary  shadow-md  ">
+            {current[1]}
           </div>
-          <div>input</div>
+          {current[1] === "Results" ? <ResultPage /> : <MessageBox />}
         </div>
       </div>
     </div>

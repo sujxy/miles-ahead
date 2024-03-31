@@ -19,7 +19,7 @@ const Home = () => {
             confidence.
           </p>
           <Link
-            to="/chat/a1"
+            to="/chat"
             className="center-div mt-3 rounded-xl bg-primary px-3 py-2 text-xl font-normal text-white "
           >
             Get Started <MoveRight className="inline" />
