@@ -43,29 +43,29 @@ const userData = {
 };
 
 // function for adding Human/AI message to mongodb
-async function AddMessage({ chat_id, content, type }) {
+async function addMessage({ chat_id, content, type }) {
   try {
     const findChat = await ChatModel.findOne({ _id: chat_id });
 
     if (!findChat) {
       console.log("Chat not found to add message");
     }
-    const newMessage = new MessageModel({
+    const newMessage = await MessageModel.create({
       chat_id,
       content,
       type,
     });
-
-    await newMessage.save();
     console.log("Message added to MongoDB");
+    return Promise.resolve();
   } catch (error) {
     console.log("Fail to add Message to MongoDB");
-    console.log(error);
+    console.log(error.message);
+    return Promise.reject();
   }
 }
 
 //function for adding report 1 analysis to mongodb
-async function AddReport1({ user_id, chat_id, scores, content }) {
+async function addReport1({ user_id, chat_id, scores, content }) {
   try {
     const findChatUser = await ChatModel.findOne({
       _id: chat_id,
@@ -76,51 +76,43 @@ async function AddReport1({ user_id, chat_id, scores, content }) {
       console.log("Chat or User not found");
     }
 
-    const newReport = new Report1Model({
+    const newReport = await Report1Model.create({
       user_id,
       chat_id,
       scores,
       content,
     });
-
-    await newReport.save();
     console.log("Report 1 analysis added");
+    return Promise.resolve();
   } catch (error) {
     console.log("Error from backend in mongodb function");
-    console.log(error);
+    console.log(error.message);
+    return Promise.reject();
   }
 }
 
 //function to add report 2 in mongodb
-async function AddReport2({ user_id, chat_id, content, userOptions }) {
+async function addReport2({ user_id, chat_id, content, userOptions }) {
   try {
-    const findChatUser = await ChatModel.findOne({
-      _id: chat_id,
-      user_id: user_id,
-    });
-
-    if (!findChatUser) {
-      console.log("Chat or User not found");
-    }
-
-    const newReport = new Report2Model({
+    const newReport = await Report2Model.create({
       user_id,
       chat_id,
       content,
       userOptions,
     });
 
-    await newReport.save();
     console.log("Report 2 analysis added");
+    return Promise.resolve();
   } catch (error) {
-    console.log("Error from backend");
-    console.log(error);
+    console.log("Error from in report 2");
+    return Promise.reject();
   }
 }
 
 export const handleChat_1 = async (req, res) => {
   try {
-    const { user_id, chat_id, userResponse } = req.body;
+    const user_id = req.userId;
+    const { chat_id, userResponse, type } = req.body;
 
     // Anthropic related
     chatHistory.addMessage(new HumanMessage(userResponse));
@@ -144,15 +136,15 @@ export const handleChat_1 = async (req, res) => {
     );
 
     //calling the function to add Human message to mongodb
-    AddMessage({ chat_id, userResponse, type: "Human" });
-    AddMessage({ chat_id, content: llm_content, type: "AI" });
+    await addMessage({ chat_id, content: userResponse, type: "Human" });
+    await addMessage({ chat_id, content: llm_content, type: "AI" });
 
     //anthropic related continue
     chatHistory.addMessage(new AIMessage(llmResponse.lc_kwargs.content));
 
     if (status == "completed") {
       await chatHistory.clear();
-      AddReport1({
+      await addReport1({
         user_id,
         chat_id,
         scores: userScores,
@@ -163,16 +155,18 @@ export const handleChat_1 = async (req, res) => {
     res.status(200).json({
       message: { status, content: llm_content, userScores },
       raw: llmResponse.lc_kwargs.content,
+      chatId: chat_id,
     });
   } catch (e) {
     console.log(e.message);
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: "error answering question" });
   }
 };
 
 export const handleChat_2 = async (req, res) => {
   try {
-    const { user_id, chat_id, userResponse } = req.body;
+    const user_id = req.userId;
+    const { chat_id, userResponse, type } = req.body;
 
     //while going to anthropic we also pass report1 (userData)
     //store it here for first time
@@ -206,20 +200,21 @@ export const handleChat_2 = async (req, res) => {
     );
 
     //calling the function to add Human message to mongodb
-    AddMessage({ chat_id, content: userResponse, type: "Human" });
+    await addMessage({ chat_id, content: userResponse, type: "Human" });
     //function for adding AI message to mongodb if status is
-    AddMessage({ chat_id, content: llm_content, type: "AI" });
+    await addMessage({ chat_id, content: llm_content, type: "AI" });
 
     //ad message to chat history
     chatHistory.addMessage(new AIMessage(llmResponse.lc_kwargs.content));
     if (status == "completed") {
       //if completed then add the response to report
-      AddReport2({ user_id, chat_id, content: llm_content, userOptions });
+      await addReport2({ user_id, chat_id, content: llm_content, userOptions });
       await chatHistory.clear();
     }
     res.status(200).json({
       message: { status, content: llm_content, userOptions },
       raw: llmResponse.lc_kwargs.content,
+      chatId: chat_id,
     });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -227,72 +222,69 @@ export const handleChat_2 = async (req, res) => {
 };
 
 //adding chat to mongodb and returning chat id
-export const AddChat = async (req, res) => {
-  try {
-    const { user_id, type } = req.body;
-    const findUser = await UserModel.findOne({ _id: user_id });
+// export const AddChat = async (req, res) => {
+//   try {
+//     const user_id = req.userId;
+//     const { type } = req.body;
+//     const findUser = await UserModel.findOne({ _id: user_id });
 
-    if (!findUser) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "User not found" });
-    }
+//     if (!findUser) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
 
-    const conversation = new ChatModel({
-      user_id,
-      type,
-    });
-    await conversation.save();
-    res
-      .status(200)
-      .json({ status: "success", message: "Conversation added to DB" });
-  } catch (error) {
-    res.status(500).json({
-      error: error.message,
-    });
-  }
-};
+//     const conversation = await ChatModel.create({
+//       user_id,
+//       type,
+//     });
+
+//     res.status(200).json({ message: conversation });
+//   } catch (error) {
+//     res.status(500).json({
+//       error: error.message,
+//     });
+//   }
+// };
 
 //get latest chat id using user id and type of chat
-export const GetLatestChatId = async (req, res) => {
-  try {
-    const { user_id, type } = req.body;
+// export const GetLatestChatId = async (req, res) => {
+//   try {
+//     const { user_id, type } = req.body;
 
-    // Check if user exists
-    const findUser = await UserModel.findOne({ _id: user_id });
-    if (!findUser) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "User not found" });
-    }
+//     // Check if user exists
+//     const findUser = await UserModel.findOne({ _id: user_id });
+//     if (!findUser) {
+//       return res
+//         .status(404)
+//         .json({ status: "fail", message: "User not found" });
+//     }
 
-    // Find the latest chat based on user_id and type
-    const findLatestChat = await ChatModel.findOne(
-      { user_id: user_id, type: type },
-      {},
-      { sort: { createdAt: -1 } },
-    );
+//     // Find the latest chat based on user_id and type
+//     const findLatestChat = await ChatModel.findOne(
+//       { user_id: user_id, type: type },
+//       {},
+//       { sort: { createdAt: -1 } },
+//     );
 
-    if (!findLatestChat) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "Chat not found" });
-    }
+//     if (!findLatestChat) {
+//       return res
+//         .status(404)
+//         .json({ status: "fail", message: "Chat not found" });
+//     }
 
-    return res.status(200).json({
-      status: "success",
-      message: "Chat ID found",
-      chat_id: findLatestChat._id,
-      type: findLatestChat.type,
-    });
-  } catch (error) {
-    // Handle any errors that occur during execution
-    console.error("Error:", error);
-    return res
-      .status(500)
-      .json({ status: "error", message: "Internal server error" });
-  }
-};
+//     return res.status(200).json({
+//       status: "success",
+//       message: "Chat ID found",
+//       chat_id: findLatestChat._id,
+//       type: findLatestChat.type,
+//     });
+//   } catch (error) {
+//     // Handle any errors that occur during execution
+//     console.error("Error:", error);
+//     return res
+//       .status(500)
+//       .json({ status: "error", message: "Internal server error" });
+//   }
+// };
 
 //phase 3 jobs
 import axios from "axios";

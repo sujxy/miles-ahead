@@ -4,9 +4,9 @@ import { Level } from "./level";
 
 const UserProgress = () => {
   const current = useRecoilValue(currentLevel);
-  const [progress, setProgress] = useRecoilState(progressAtom);
+
   const barLevel = (current[0] * 33).toString() + "%";
-  console.log(`barlevel : ${barLevel}`);
+
   const levels = ["About you", "Personality", "Career Path", "Results"];
   return (
     <div className=" center-div relative my-4 flex h-1/2 w-full gap-2  ">

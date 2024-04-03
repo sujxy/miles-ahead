@@ -14,10 +14,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    mobile: {
-      type: String,
-      required: true,
-    },
+
     gender: {
       type: String,
       required: true,
@@ -26,14 +23,14 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    current_education: {
+    education: {
       type: String,
       required: true,
     },
     password: {
       type: String,
       required: true,
-    }
+    },
   },
   { timestamps: true },
 );

@@ -2,8 +2,11 @@ import { ChevronDown, MoveRight } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "../components/navbar";
+import { useRecoilValue } from "recoil";
+import { userAtom, userData } from "../store/atoms";
 
 const Home = () => {
+  const user = useRecoilValue(userData);
   return (
     <div className="relative min-h-screen w-screen">
       {/* navbar */}
@@ -19,7 +22,7 @@ const Home = () => {
             confidence.
           </p>
           <Link
-            to="/chat"
+            to={`${!user ? "/signin" : "/chat"}`}
             className="center-div mt-3 rounded-xl bg-primary px-3 py-2 text-xl font-normal text-white "
           >
             Get Started <MoveRight className="inline" />

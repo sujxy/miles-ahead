@@ -39,7 +39,6 @@ const AddReport1 = async (req, res) => {
   }
 };
 
-
 //add report2 analysis to mongodb
 const AddReport2 = async (req, res) => {
   try {
@@ -77,14 +76,14 @@ const AddReport2 = async (req, res) => {
   }
 };
 
-
 //get report 1 data
 const GetReport1 = async (req, res) => {
   try {
-    const { user_id, chat_id } = req.body;
+    const userId = req.userId;
+    console.log("report for user : ", userId);
+    // const { chat_id } = req.query;
     const report1 = await Report1Model.findOne({
-      user_id: user_id,
-      chat_id: chat_id,
+      user_id: userId,
     });
 
     if (!report1) {
@@ -93,25 +92,20 @@ const GetReport1 = async (req, res) => {
         .json({ status: "fail", message: "Report 1 not found" });
     }
 
-    return res
-      .status(200)
-      .json({ status: "success", message: "Report 1 found", report1 });
+    return res.status(200).json({ message: report1 });
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ status: "fail", message: "Error from backend" });
+    return res.status(500).json({ error: "Error from backend" });
   }
 };
-
 
 //get report 2 data
 const GetReport2 = async (req, res) => {
   try {
-    const { user_id, chat_id } = req.body;
+    const userId = req.userId;
+    const { chat_id } = req.query;
     const report2 = await Report2Model.findOne({
-      user_id: user_id,
-      chat_id: chat_id,
+      user_id: userId,
     });
 
     if (!report2) {
@@ -120,14 +114,10 @@ const GetReport2 = async (req, res) => {
         .json({ status: "fail", message: "Report 2 not found" });
     }
 
-    return res
-      .status(200)
-      .json({ status: "success", message: "Report 2 found", report2 });
+    return res.status(200).json({ message: report2 });
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ status: "fail", message: "Error from backend" });
+    return res.status(500).json({ error: "Error from backend" });
   }
 };
 

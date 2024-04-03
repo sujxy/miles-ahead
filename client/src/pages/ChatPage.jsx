@@ -1,11 +1,9 @@
-import { useParams } from "react-router-dom";
-import Message from "../components/message";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { currentLevel, progressAtom } from "../store/atoms";
-import ChatInputBox from "../components/ChatInputBox";
+import { useRecoilValue } from "recoil";
+import { currentLevel } from "../store/atoms";
 import UserProgress from "../components/userProgress";
 import MessageBox from "../components/messageBox";
 import ResultPage from "./resultpage";
+import { Link } from "react-router-dom";
 
 const ChatPage = () => {
   const current = useRecoilValue(currentLevel);
@@ -14,12 +12,12 @@ const ChatPage = () => {
     <div>
       <div className="grid max-h-[100vh] w-screen grid-cols-12  px-24 ">
         <div className=" col-span-3  flex flex-col items-center justify-start gap-6 pt-6 ">
-          <div className="center-div w-auto">
+          <Link to="/" className="center-div w-auto">
             <img src={"/logo.png"} className="h-8 w-12" />
             <h1 className="font-yeseva text-3xl italic text-gray-700">
               milesahead
             </h1>
-          </div>
+          </Link>
           <UserProgress />
         </div>
 

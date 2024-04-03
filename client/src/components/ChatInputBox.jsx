@@ -1,6 +1,9 @@
 import { Send } from "lucide-react";
+import { useRecoilValue } from "recoil";
+import { currentLevel } from "../store/atoms";
 
 const ChatInputBox = ({ message, setMessage, handleSend }) => {
+  const current = useRecoilValue(currentLevel);
   return (
     <div className=" mb-4  grid h-20 grid-cols-12  overflow-hidden rounded-lg border shadow-lg ">
       <input

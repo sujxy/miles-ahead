@@ -14,7 +14,7 @@ const Message = ({ type, message }) => {
         <h1 className="text-md font-semibold">
           {type == "Human" ? "You" : "Miles"}
         </h1>
-        <p className=" text-gray-600">{message}</p>
+        <p className="whitespace-pre-line text-gray-600">{message}</p>
       </div>
     </div>
   );

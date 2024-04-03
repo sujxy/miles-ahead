@@ -35,25 +35,20 @@ export const AddMessage = async (req, res) => {
 //get all messages from mongo of specific chat and send to client
 export const GetAllMessages = async (req, res) => {
   try {
-    const { chat_id } = req.body;
-    const Messages = await MessageModel.find({
-      chat_id: chat_id,
-    });
+    const { chatId } = req.query;
+    console.log(`request from for messages of chat : ${chatId}`);
+    const messages = await MessageModel.find({
+      chat_id: chatId,
+    }).sort({ createdAt: 1 });
 
-    if (!Messages) {
-      return res
-        .status(404)
-        .json({ status: "fail", message: "Messages not found" });
+    if (!messages) {
+      return res.status(404).json({ error: "messages not found" });
     }
 
-    return res
-      .status(200)
-      .json({ status: "success", message: "Messages found", Messages });
+    return res.status(200).json({ message: messages });
   } catch (error) {
     console.error(error);
-    return res
-      .status(500)
-      .json({ status: "fail", message: "Error from backend" });
+    return res.status(500).json({ error: "Error from backend" });
   }
 };
 

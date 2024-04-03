@@ -1,3 +1,4 @@
+import { Report1Model, Report2Model } from "../models/reportModel.js";
 import UserModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 
@@ -7,20 +8,20 @@ export const handleSignUp = async (req, res) => {
       name,
       age,
       email,
-      mobile,
+
       gender,
       city,
-      current_education,
+      education,
       password,
     } = req.body;
     const newUser = await UserModel.create({
       name,
       age,
       email,
-      mobile,
+
       gender,
       city,
-      current_education,
+      education,
       password,
     });
 
@@ -45,6 +46,20 @@ export const handleSignIn = async (req, res) => {
         { userId: user._id },
         "wqbeibveiubbrifi3qnr2939rnjkvdns",
       );
+
+      const report1 = await Report1Model.findOne({ user_id: user._id });
+      const report2 = await Report2Model.findOne({ user_id: user._id });
+      console.log(report1, report2);
+      if (report1 && report2) {
+        res.status(200).json({
+          message: { token: token },
+          chatId: {
+            chatId1: report1.chat_id,
+            chatId2: report2.chat_id,
+          },
+        });
+        return;
+      }
       res.status(200).json({
         message: { token: token },
       });
@@ -59,7 +74,7 @@ export const handleSignIn = async (req, res) => {
   }
 };
 
-export const getUserData = async () => {
+export const getUserData = async (req, res) => {
   try {
     const userId = req.userId;
     const userData = await UserModel.findOne({ _id: userId });

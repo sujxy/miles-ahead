@@ -16,27 +16,27 @@ const Reoprt1Schema = new mongoose.Schema(
     scores: {
       R: {
         type: Number,
-        required: true,
+        default: 0,
       },
       I: {
         type: Number,
-        required: true,
+        default: 0,
       },
       A: {
         type: Number,
-        required: true,
+        default: 0,
       },
       S: {
         type: Number,
-        required: true,
+        default: 0,
       },
       E: {
         type: Number,
-        required: true,
+        default: 0,
       },
       C: {
         type: Number,
-        required: true,
+        default: 0,
       },
     },
     content: {
@@ -48,10 +48,9 @@ const Reoprt1Schema = new mongoose.Schema(
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 const Report1Model = mongoose.model("Career_report1", Reoprt1Schema);
-
 
 //report 2 schema
 const Reoprt2Schema = new mongoose.Schema(
@@ -74,13 +73,16 @@ const Reoprt2Schema = new mongoose.Schema(
       type: Map,
       of: Number,
       required: true,
+      default: {
+        job: 0,
+      },
     },
     createdAt: {
       type: Date,
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 const Report2Model = mongoose.model("Career_report2", Reoprt2Schema);
 
